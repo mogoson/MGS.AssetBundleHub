@@ -1,0 +1,7 @@
+{
+    "description": "Hub to build and load asset bundle.",
+    "displayName": "Asset Bundle Hub",
+    "name": "com.mgs.assetbundlehub",
+    "unity": "2019.4",
+    "version": "1.0.0"
+}
