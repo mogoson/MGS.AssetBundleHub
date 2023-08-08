@@ -18,7 +18,7 @@ namespace MGS.AssetBundles
 {
     public class AssetManifest : IAssetManifest
     {
-        public string AssetsPath
+        public string AssetsRoot
         {
             set
             {
@@ -27,33 +27,49 @@ namespace MGS.AssetBundles
             }
             get { return assetsPath; }
         }
-        string assetsPath = Application.streamingAssetsPath;
+        string assetsPath;
         string manifestFile;
 
-        public IEnumerable<string> GetDependences(string abFile)
+        public IEnumerable<string> GetDependences(string abName)
         {
-            //The manifest AB will Unload after AssetBundleHandler.UnloadCacheABs or UnloadCacheABsAsync invoke.
-            var manifest = AssetBundleHandler.LoadAsset<AssetBundleManifest>(manifestFile, "AssetBundleManifest");
+            var manifest = LoadManifest();
             if (manifest == null)
             {
                 return null;
             }
 
-            var abName = Path.GetFileName(abFile);
-            var depNames = manifest.GetAllDependencies(abName);
-            if (depNames == null)
+            var assetName = GetAssetName(abName);
+            return manifest.GetAllDependencies(assetName);
+        }
+
+        public string GetAssetPath(string abName)
+        {
+            return $"{AssetsRoot}/{GetAssetName(abName)}";
+        }
+
+        string GetAssetName(string abName)
+        {
+            var manifest = LoadManifest();
+            if (manifest == null)
             {
-                return null;
+                return abName;
             }
 
-            var depFiles = new List<string>();
-            foreach (var depName in depNames)
+            var assets = manifest.GetAllAssetBundles();
+            foreach (var asset in assets)
             {
-                var depFile = $"{AssetsPath}/{depName}";
-                depFiles.Add(depFile);
+                if (asset.Contains(abName))
+                {
+                    return asset;
+                }
             }
+            return abName;
+        }
 
-            return depFiles;
+        AssetBundleManifest LoadManifest()
+        {
+            //The manifest AB will Unload after AssetBundleHandler.UnloadCacheABs or UnloadCacheABsAsync invoke.
+            return AssetBundleHandler.LoadAsset<AssetBundleManifest>(manifestFile, "AssetBundleManifest");
         }
     }
 }

@@ -16,8 +16,10 @@ namespace MGS.AssetBundles
 {
     public interface IAssetManifest
     {
-        string AssetsPath { set; get; }
+        string AssetsRoot { set; get; }
 
-        IEnumerable<string> GetDependences(string abFile);
+        IEnumerable<string> GetDependences(string abName);
+
+        string GetAssetPath(string abName);
     }
 }

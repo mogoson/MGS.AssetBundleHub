@@ -7,13 +7,10 @@ using UnityEngine.TestTools;
 
 public class AssetBundleHubTests
 {
-    string assetsPath;
-
     [OneTimeSetUp]
     public void OneTimeSetUp()
     {
-        assetsPath = $"{Application.streamingAssetsPath}/AssetBundles/Windows";
-        AssetBundleHub.Manifest.AssetsPath = assetsPath;
+        AssetBundleHub.AssetsRoot = $"{Application.streamingAssetsPath}/AssetBundles";
     }
 
     [OneTimeTearDown]
@@ -25,8 +22,8 @@ public class AssetBundleHubTests
     [Test]
     public void LoadBundleTest()
     {
-        var abFile = $"{assetsPath}/spherecube.ab";
-        var cube = AssetBundleHub.LoadBundle(abFile);//Use file path, and will load deps.
+        var abName = "spherecube.ab";
+        var cube = AssetBundleHub.LoadBundle(abName);//Use file path, and will load deps.
         Assert.IsNotNull(cube);
 
         var depName = "cube.ab";
@@ -34,7 +31,7 @@ public class AssetBundleHubTests
         var isFind = false;
         foreach (var ab in abs)
         {
-            if (ab.name == depName)
+            if (ab.name.Contains(depName))
             {
                 isFind = true;
                 break;
@@ -50,8 +47,8 @@ public class AssetBundleHubTests
     public void LoadAssetTest()
     {
         var assetName = "spherecube";
-        var abFile = $"{assetsPath}/{assetName}.ab";
-        var asset = AssetBundleHub.LoadAsset<GameObject>(abFile, assetName);
+        var abName = $"{assetName}.ab";
+        var asset = AssetBundleHub.LoadAsset<GameObject>(abName, assetName);
         Assert.IsNotNull(asset);
 
         var depName = "cube.ab";
@@ -59,7 +56,7 @@ public class AssetBundleHubTests
         var isFind = false;
         foreach (var ab in abs)
         {
-            if (ab.name == depName)
+            if (ab.name.Contains(depName))
             {
                 isFind = true;
                 break;
@@ -77,13 +74,12 @@ public class AssetBundleHubTests
         LoadBundleTest();
 
         var depName = "cube.ab";
-        var abFile = $"{assetsPath}/{depName}";
-        AssetBundleHub.UnloadCacheAB(abFile);//Can not unlod, cube ref by spherecube.
+        AssetBundleHub.UnloadCacheAB(depName);//Can not unlod, cube ref by spherecube.
         var abs = AssetBundle.GetAllLoadedAssetBundles();
         var isFind = false;
         foreach (var ab in abs)
         {
-            if (ab.name == depName)
+            if (ab.name.Contains(depName))
             {
                 isFind = true;
                 break;
@@ -95,9 +91,9 @@ public class AssetBundleHubTests
         }
 
 
-        abFile = $"{assetsPath}/spherecube.ab";
-        AssetBundleHub.UnloadCacheAB(abFile);
-        var deps = AssetBundleHub.Manifest.GetDependences(abFile).ToList();
+        depName = "spherecube.ab";
+        AssetBundleHub.UnloadCacheAB(depName);
+        var deps = AssetBundleHub.Manifest.GetDependences(depName).ToList();
         abs = AssetBundle.GetAllLoadedAssetBundles();
         foreach (var ab in abs)
         {
@@ -130,9 +126,9 @@ public class AssetBundleHubTests
     [UnityTest]
     public IEnumerator LoadBundleAsyncTest()
     {
-        var abFile = $"{assetsPath}/spherecube.ab";
+        var abName = "spherecube.ab";
         AssetBundle bundle = null;
-        yield return AssetBundleHub.LoadBundleAsync(abFile, ab => bundle = ab);
+        yield return AssetBundleHub.LoadBundleAsync(abName, ab => bundle = ab);
         Assert.IsNotNull(bundle);
 
         var depName = "cube.ab";
@@ -140,7 +136,7 @@ public class AssetBundleHubTests
         var isFind = false;
         foreach (var ab in abs)
         {
-            if (ab.name == depName)
+            if (ab.name.Contains(depName))
             {
                 isFind = true;
                 break;
@@ -156,9 +152,9 @@ public class AssetBundleHubTests
     public IEnumerator LoadAssetAsyncTest()
     {
         var assetName = "spherecube";
-        var abFile = $"{assetsPath}/{assetName}.ab";
+        var abName = $"{assetName}.ab";
         GameObject asset = null;
-        yield return AssetBundleHub.LoadAssetAsync<GameObject>(abFile, assetName, go => asset = go);
+        yield return AssetBundleHub.LoadAssetAsync<GameObject>(abName, assetName, go => asset = go);
         Assert.IsNotNull(asset);
 
         var depName = "cube.ab";
@@ -166,7 +162,7 @@ public class AssetBundleHubTests
         var isFind = false;
         foreach (var ab in abs)
         {
-            if (ab.name == depName)
+            if (ab.name.Contains(depName))
             {
                 isFind = true;
                 break;

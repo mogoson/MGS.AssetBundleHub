@@ -18,27 +18,62 @@ namespace MGS.AssetBundles
 {
     public sealed class AssetBundleHub
     {
+        #region Platform
+        public static string AssetsRoot
+        {
+            set
+            {
+                assetsRoot = value;
+                Manifest.AssetsRoot = $"{assetsRoot}/{Platform}";
+            }
+            get { return assetsRoot; }
+        }
+        static string assetsRoot;
+
+        public static string Platform
+        {
+            get
+            {
+#if UNITY_IOS
+                return "iOS";
+#elif UNITY_ANDROID
+                return "Android";
+#else
+                return "Windows";
+#endif
+            }
+        }
+        #endregion
+
+        #region Refs
         public static IAssetManifest Manifest { set; get; } = new AssetManifest();
         static Dictionary<string, List<string>> depRefs = new Dictionary<string, List<string>>();
+        #endregion
+
         #region Sync
-        public static AssetBundle LoadBundle(string abFile)
+        public static AssetBundle LoadBundle(string abName)
         {
-            LoadDepBundles(abFile);
+            LoadDepBundles(abName);
+
+            var abFile = Manifest.GetAssetPath(abName);
             return AssetBundleHandler.LoadBundle(abFile);
         }
 
-        public static T LoadAsset<T>(string abFile, string assetName) where T : Object
+        public static T LoadAsset<T>(string abName, string assetName) where T : Object
         {
-            LoadDepBundles(abFile);
+            LoadDepBundles(abName);
+
+            var abFile = Manifest.GetAssetPath(abName);
             return AssetBundleHandler.LoadAsset<T>(abFile, assetName);
         }
 
-        public static void UnloadCacheAB(string abFile)
+        public static void UnloadCacheAB(string abName)
         {
-            if (!depRefs.ContainsKey(abFile))
+            if (!depRefs.ContainsKey(abName))
             {
+                var abFile = Manifest.GetAssetPath(abName);
                 AssetBundleHandler.UnloadCacheAB(abFile);
-                UnloadDepBundles(abFile);
+                UnloadDepBundles(abName);
             }
         }
 
@@ -48,35 +83,36 @@ namespace MGS.AssetBundles
             AssetBundleHandler.UnloadCacheABs();
         }
 
-        static void LoadDepBundles(string abFile)
+        static void LoadDepBundles(string abName)
         {
-            var depFiles = Manifest.GetDependences(abFile);
-            if (depFiles != null)
+            var depAssets = Manifest.GetDependences(abName);
+            if (depAssets != null)
             {
-                foreach (var depFile in depFiles)
+                foreach (var depAsset in depAssets)
                 {
-                    LoadDepBundles(depFile);
+                    LoadDepBundles(depAsset);
+                    var depFile = Manifest.GetAssetPath(depAsset);
                     AssetBundleHandler.LoadBundle(depFile);
-                    CacheDepRef(depFile, abFile);
+                    CacheDepRef(depAsset, abName);
                 }
             }
         }
 
-        static void CacheDepRef(string depABFile, string refABFile)
+        static void CacheDepRef(string depABName, string refABName)
         {
-            if (!depRefs.ContainsKey(depABFile))
+            if (!depRefs.ContainsKey(depABName))
             {
-                depRefs.Add(depABFile, new List<string>());
+                depRefs.Add(depABName, new List<string>());
             }
-            if (!depRefs[depABFile].Contains(refABFile))
+            if (!depRefs[depABName].Contains(refABName))
             {
-                depRefs[depABFile].Add(refABFile);
+                depRefs[depABName].Add(refABName);
             }
         }
 
-        static void UnloadDepBundles(string abFile)
+        static void UnloadDepBundles(string abName)
         {
-            var deps = Manifest.GetDependences(abFile);
+            var deps = Manifest.GetDependences(abName);
             if (deps != null)
             {
                 foreach (var dep in deps)
@@ -85,43 +121,51 @@ namespace MGS.AssetBundles
 
                     if (depRefs.ContainsKey(dep))
                     {
-                        depRefs[dep].Remove(abFile);
+                        depRefs[dep].Remove(abName);
                         if (depRefs[dep].Count > 0)
                         {
                             continue;
                         }
                         depRefs.Remove(dep);
                     }
-                    AssetBundleHandler.UnloadCacheAB(dep);
+
+                    var depFile = Manifest.GetAssetPath(dep);
+                    AssetBundleHandler.UnloadCacheAB(depFile);
                 }
             }
         }
         #endregion
 
         #region Async
-        public static IEnumerator LoadBundleAsync(string abFile, System.Action<AssetBundle> finished)
+        public static IEnumerator LoadBundleAsync(string abName, System.Action<AssetBundle> finished)
         {
-            yield return LoadDepBundlesAsync(abFile);
+            yield return LoadDepBundlesAsync(abName);
+
+            var abFile = Manifest.GetAssetPath(abName);
             yield return AssetBundleHandler.LoadBundleAsync(abFile, finished);
         }
 
-        static IEnumerator LoadDepBundlesAsync(string abFile)
+        static IEnumerator LoadDepBundlesAsync(string abName)
         {
-            var deps = Manifest.GetDependences(abFile);
+            var deps = Manifest.GetDependences(abName);
             if (deps != null)
             {
                 foreach (var dep in deps)
                 {
                     yield return LoadDepBundlesAsync(dep);
-                    yield return AssetBundleHandler.LoadBundleAsync(dep);
-                    CacheDepRef(dep, abFile);
+
+                    var depFile = Manifest.GetAssetPath(dep);
+                    yield return AssetBundleHandler.LoadBundleAsync(depFile);
+                    CacheDepRef(dep, abName);
                 }
             }
         }
 
-        public static IEnumerator LoadAssetAsync<T>(string abFile, string assetName, System.Action<T> finished) where T : Object
+        public static IEnumerator LoadAssetAsync<T>(string abName, string assetName, System.Action<T> finished) where T : Object
         {
-            yield return LoadDepBundlesAsync(abFile);
+            yield return LoadDepBundlesAsync(abName);
+
+            var abFile = Manifest.GetAssetPath(abName);
             yield return AssetBundleHandler.LoadAssetAsync(abFile, assetName, finished);
         }
 

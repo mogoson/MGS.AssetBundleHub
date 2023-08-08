@@ -11,7 +11,7 @@ public class AssetBundleHandlerTests
     [OneTimeSetUp]
     public void OneTimeSetUp()
     {
-        assetsPath = $"{Application.streamingAssetsPath}/AssetBundles/Windows";
+        assetsPath = $"{Application.streamingAssetsPath}/AssetBundles/Windows/meshes/";
     }
 
     [OneTimeTearDown]
