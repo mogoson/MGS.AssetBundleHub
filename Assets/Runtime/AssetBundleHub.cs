@@ -170,12 +170,13 @@ namespace MGS.AssetBundles
         }
 
 #if UNITY_2021
-        public static IEnumerator UnloadCacheABAsync(string abFile, System.Action finished = null)
+        public static IEnumerator UnloadCacheABAsync(string abName, System.Action finished = null)
         {
-            if (!depRefs.ContainsKey(abFile))
+            if (!depRefs.ContainsKey(abName))
             {
+                var abFile = Manifest.GetAssetPath(abName);
                 yield return AssetBundleHandler.UnloadCacheABAsync(abFile);
-                yield return UnloadDepBundlesAsync(abFile);
+                yield return UnloadDepBundlesAsync(abName);
             }
             finished?.Invoke();
         }
@@ -186,9 +187,9 @@ namespace MGS.AssetBundles
             yield return AssetBundleHandler.UnloadCacheABsAsync(finished);
         }
 
-        static IEnumerator UnloadDepBundlesAsync(string abFile)
+        static IEnumerator UnloadDepBundlesAsync(string abName)
         {
-            var deps = Manifest.GetDependences(abFile);
+            var deps = Manifest.GetDependences(abName);
             if (deps != null)
             {
                 foreach (var dep in deps)
@@ -197,14 +198,16 @@ namespace MGS.AssetBundles
 
                     if (depRefs.ContainsKey(dep))
                     {
-                        depRefs[dep].Remove(abFile);
+                        depRefs[dep].Remove(abName);
                         if (depRefs[dep].Count > 0)
                         {
                             continue;
                         }
                         depRefs.Remove(dep);
                     }
-                    yield return AssetBundleHandler.UnloadCacheABAsync(dep);
+
+                    var abFile = Manifest.GetAssetPath(dep);
+                    yield return AssetBundleHandler.UnloadCacheABAsync(abFile);
                 }
             }
         }

@@ -181,13 +181,12 @@ public class AssetBundleHubTests
         LoadBundleTest();
 
         var depName = "cube.ab";
-        var abFile = $"{assetsPath}/{depName}";
-        yield return AssetBundleHub.UnloadCacheABAsync(abFile);//Can not unlod, cube ref by spherecube.
+        yield return AssetBundleHub.UnloadCacheABAsync(depName);//Can not unlod, cube ref by spherecube.
         var abs = AssetBundle.GetAllLoadedAssetBundles();
         var isFind = false;
         foreach (var ab in abs)
         {
-            if (ab.name == depName)
+            if (ab.name.Contains(depName))
             {
                 isFind = true;
                 break;
@@ -198,9 +197,9 @@ public class AssetBundleHubTests
             Assert.Fail();
         }
 
-        abFile = $"{assetsPath}/spherecube.ab";
-        yield return AssetBundleHub.UnloadCacheABAsync(abFile);
-        var deps = AssetBundleHub.Manifest.GetDependences(abFile).ToList();
+        depName = "spherecube.ab";
+        yield return AssetBundleHub.UnloadCacheABAsync(depName);
+        var deps = AssetBundleHub.Manifest.GetDependences(depName).ToList();
         abs = AssetBundle.GetAllLoadedAssetBundles();
         foreach (var ab in abs)
         {
