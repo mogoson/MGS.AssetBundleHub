@@ -21,28 +21,33 @@ namespace MGS.AssetBundles.Editors
     public sealed class AssetBundleBuilder
     {
         public static AssetBundleManifest BuildToEachBundles(IEnumerable<Object> assets, string variant, string outputPath,
-            BuildAssetBundleOptions options, BuildTarget target)
+            BuildAssetBundleOptions options, BuildTarget target, string root = "Assets/")
         {
             var assetPaths = FindAssetPaths(assets);
-            return BuildToEachBundles(assetPaths, variant, outputPath, options, target);
+            return BuildToEachBundles(assetPaths, variant, outputPath, options, target, root);
         }
 
         public static AssetBundleManifest BuildToEachBundles(IEnumerable<string> assets, string variant, string outputPath,
+            BuildAssetBundleOptions options, BuildTarget target, string root = "Assets/")
+        {
+            var maps = BuildAsEachBundles(assets, variant, root).ToArray();
+            return BuildToEachBundles(maps, variant, outputPath, options, target);
+        }
+
+        public static AssetBundleManifest BuildToEachBundles(AssetBundleBuild[] maps, string variant, string outputPath,
             BuildAssetBundleOptions options, BuildTarget target)
         {
             RequireDirectory(outputPath);
-
-            var buildMap = BuildAsEachBundles(assets, variant).ToArray();
-            return BuildPipeline.BuildAssetBundles(outputPath, buildMap, options, target);
+            return BuildPipeline.BuildAssetBundles(outputPath, maps, options, target);
         }
 
-        public static IEnumerable<AssetBundleBuild> BuildAsEachBundles(IEnumerable<string> assets, string variant)
+        public static IEnumerable<AssetBundleBuild> BuildAsEachBundles(IEnumerable<string> assets, string variant, string root = "Assets/")
         {
             var maps = new List<AssetBundleBuild>();
             foreach (var asset in assets)
             {
-                var name = Path.GetFileNameWithoutExtension(asset);
-                var map = BuildAsOneBundle(new string[] { asset }, name, variant);
+                var assetName = asset.Replace(root, string.Empty);
+                var map = BuildAsOneBundle(new string[] { asset }, assetName, variant);
                 maps.Add(map);
             }
             return maps;

@@ -140,48 +140,68 @@ namespace MGS.AssetBundles.Editors
 
         static void BuildToEachBundles(IEnumerable<Object> assets, AssetBundleSettings settings, BuildTarget target)
         {
-            var variant = settings.variant;
-            var output = GetOutputPath(settings.output, target);
-            var options = settings.options;
-            AssetBundleBuilder.BuildToEachBundles(assets, variant, output, options, target);
-            AssetDatabase.Refresh();
+            if (CheckSettingsIsValid(settings))
+            {
+                var variant = settings.variant;
+                var output = GetOutputPath(settings.output, target);
+                var options = settings.options;
+                var root = ResolveRootPath(settings);
+                AssetBundleBuilder.BuildToEachBundles(assets, variant, output, options, target, root);
+                AssetDatabase.Refresh();
+            }
         }
 
         static void BuildToEachBundles(AssetBundleSettings settings, BuildTarget target)
         {
-            var assets = FindEachAssets(settings.assetBundles);
-            var variant = settings.variant;
-            var output = GetOutputPath(settings.output, target);
-            var options = settings.options;
-            AssetBundleBuilder.BuildToEachBundles(assets, variant, output, options, target);
-            AssetDatabase.Refresh();
+            if (CheckSettingsIsValid(settings))
+            {
+                var assets = FindEachAssets(settings.assets);
+                var variant = settings.variant;
+                var output = GetOutputPath(settings.output, target);
+                var options = settings.options;
+                var root = ResolveRootPath(settings);
+                AssetBundleBuilder.BuildToEachBundles(assets, variant, output, options, target, root);
+                AssetDatabase.Refresh();
+            }
         }
 
-        static IEnumerable<string> FindEachAssets(IEnumerable<AssetBundleConfig> configs)
+        static string ResolveRootPath(AssetBundleSettings settings)
+        {
+            return $"{settings.assets}/";
+        }
+
+        static bool CheckSettingsIsValid(AssetBundleSettings settings)
+        {
+            if (string.IsNullOrEmpty(settings.output))
+            {
+                DisplayDialog("Config the output in the Settings(Tool/AssetBundleEditor/Settings) first.");
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(settings.assets))
+            {
+                DisplayDialog("Config the assets in the Settings(Tool/AssetBundleEditor/Settings) first.");
+                return false;
+            }
+
+            return true;
+        }
+
+        static void DisplayDialog(string message)
+        {
+            EditorUtility.DisplayDialog("Asset Bundle Editor", message, "OK");
+        }
+
+        static IEnumerable<string> FindEachAssets(string assetRoot)
         {
             var allAssets = new List<string>();
-            foreach (var config in configs)
+            var guids = AssetDatabase.FindAssets("t:Folder", new string[] { assetRoot });
+            foreach (var guid in guids)
             {
-                var assets = FindEachAssets(config);
-                allAssets.AddRange(assets);
+                var assetPath = AssetDatabase.GUIDToAssetPath(guid);
+                allAssets.Add(assetPath);
             }
             return allAssets;
-        }
-
-        static IEnumerable<string> FindEachAssets(AssetBundleConfig config)
-        {
-            if (AssetDatabase.IsValidFolder(config.asset) && config.eachChildren)
-            {
-                var allAssets = new List<string>();
-                var guids = AssetDatabase.FindAssets("*", new string[] { config.asset });
-                foreach (var guid in guids)
-                {
-                    var assetPath = AssetDatabase.GUIDToAssetPath(guid);
-                    allAssets.Add(assetPath);
-                }
-                return allAssets;
-            }
-            return new string[] { config.asset };
         }
         #endregion
     }

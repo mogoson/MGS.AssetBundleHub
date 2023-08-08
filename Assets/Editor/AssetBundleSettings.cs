@@ -10,7 +10,6 @@
  *  Description  :  Initial development version.
  *************************************************************************/
 
-using System;
 using UnityEditor;
 using UnityEngine;
 
@@ -18,16 +17,9 @@ namespace MGS.AssetBundles.Editors
 {
     public class AssetBundleSettings : ScriptableObject
     {
-        public string output = "Assets/StreamingAssets/AssetBundles";
-        public BuildAssetBundleOptions options = BuildAssetBundleOptions.None;
+        public string assets = "Assets/AssetToBundle";
         public string variant = "ab";
-        public AssetBundleConfig[] assetBundles;
-    }
-
-    [Serializable]
-    public class AssetBundleConfig
-    {
-        public string asset;
-        public bool eachChildren;
+        public BuildAssetBundleOptions options = BuildAssetBundleOptions.None;
+        public string output = "Assets/StreamingAssets/AssetBundles";
     }
 }
