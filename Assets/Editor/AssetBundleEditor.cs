@@ -11,7 +11,7 @@
  *************************************************************************/
 
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 
@@ -25,7 +25,7 @@ namespace MGS.AssetBundles.Editors
 
         static AssetBundleEditor()
         {
-            settingsPath = ResolveSettingsPath();
+            settingsPath = "Assets/Editor/AssetBundleEditor/AssetBundleSettings.asset";
             settings = LoadSettings(settingsPath);
             if (settings == null)
             {
@@ -33,16 +33,14 @@ namespace MGS.AssetBundles.Editors
             }
         }
 
-        static string ResolveSettingsPath()
-        {
-            var editorClass = $"{typeof(AssetBundleEditor).Name}.cs";
-            var editorPath = AssetDatabase.GetAllAssetPaths().First(path => { return path.Contains(editorClass); });
-            return editorPath.Replace(editorClass, "AssetBundleSettings.asset");
-        }
-
         static AssetBundleSettings CreateSettings(string settingsPath)
         {
-            var settings = new AssetBundleSettings();
+            var dir = Path.GetDirectoryName(settingsPath);
+            if (!Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+            var settings = ScriptableObject.CreateInstance<AssetBundleSettings>();
             AssetDatabase.CreateAsset(settings, settingsPath);
             return settings;
         }
