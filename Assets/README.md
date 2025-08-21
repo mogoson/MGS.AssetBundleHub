@@ -9,10 +9,6 @@ Hub to build and load asset bundle.
 -  Load AssetBundle from local file.
 - Load Object from AssetBundle.
 
-# Environment
-
-- Unity 2021.3 or above.
-
 # Usage
 
 1. Collect your asset files and move to a directory, example Assets/AssetToBundle.
