@@ -71,3 +71,9 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 /*.vsconfig
+/Assets/Editor/AssetBundleEditor
+/Assets/Editor/AssetBundleEditor.meta
+/Assets/StreamingAssets
+/Assets/AssetToBundle
+/Assets/AssetToBundle.meta
+/Assets/StreamingAssets.meta

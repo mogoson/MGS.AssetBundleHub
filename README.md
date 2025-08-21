@@ -11,8 +11,7 @@ Hub to build and load asset bundle.
 
 # Environment
 
-- .net Framework 3.5 or above.
-- Unity 5.0 or above.
+- Unity 2021.3 or above.
 
 # Usage
 
@@ -22,4 +21,4 @@ Hub to build and load asset bundle.
 1. Use the class AssetBundleHub to load AssetBundle and Object.
 
 ---
-Copyright 2024 Mogoson.	mogoson@outlook.com
+Copyright © 2025 Mogoson.	mogoson@outlook.com

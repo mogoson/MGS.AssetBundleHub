@@ -23,7 +23,7 @@ public class AssetBundleHubTests
     public void LoadBundleTest()
     {
         var abName = "spherecube.ab";
-        var cube = AssetBundleHub.LoadBundle(abName);//Use file path, and will load deps.
+        var cube = AssetBundleHub.LoadBundle(abName);//Use AB name, and will load deps.
         Assert.IsNotNull(cube);
 
         var depName = "cube.ab";
