@@ -3,7 +3,7 @@
 
 Hub to build and load asset bundle.
 
-# Demand
+# Ability
 
 - Build the asset files to AssetBundle.
 -  Load AssetBundle from local file.
