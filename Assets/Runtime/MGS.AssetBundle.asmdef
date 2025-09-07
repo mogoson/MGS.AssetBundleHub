@@ -1,10 +1,8 @@
 {
-    "name": "MGS.AssetBundles.Editors",
+    "name": "MGS.AssetBundle",
     "rootNamespace": "",
     "references": [],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

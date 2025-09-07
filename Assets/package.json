@@ -1,7 +1,24 @@
 {
-    "description": "Hub to build and load asset bundle.",
-    "displayName": "Asset Bundle Hub",
     "name": "com.mgs.assetbundlehub",
+    "version": "1.0.0",
+    "displayName": "Asset Bundle Hub",
+    "description": "Hub to build and load asset bundle.",
     "unity": "2021.3",
-    "version": "1.0.0"
+    "keywords": [
+        "asset",
+        "bundle",
+        "hub"
+    ],
+    "author": {
+        "name": "Mogoson",
+        "email": "mogoson@outlook.com",
+        "url": "https://github.com/mogoson"
+    },
+    "samples": [
+        {
+            "displayName": "Sample",
+            "description": "Asset to bundle for test",
+            "path": "Samples~/Sample"
+        }
+    ]
 }
