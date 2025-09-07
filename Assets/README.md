@@ -9,6 +9,14 @@ Hub to build and load asset bundle.
 -  Load AssetBundle from local file.
 - Load Object from AssetBundle.
 
+## Install
+
+- Unity --> Window --> Package Manager --> "+" --> Add package from git URL...
+
+  ```text
+  https://github.com/mogoson/MGS.AssetBundleHub.git?path=/Assets
+  ```
+
 # Usage
 
 1. Collect your asset files and move to a directory, example Assets/AssetToBundle.
