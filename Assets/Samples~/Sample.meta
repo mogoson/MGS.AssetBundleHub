@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Samples.meta
+guid: 2c07a462b1f50964eb60d35486a8f0cc
+========
+guid: 592408346ac8f0543b1f86c9f17a5451
+>>>>>>>> 4d5be51 (standard Unity package.):Assets/Samples~/Sample.meta
+folderAsset: yes
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
