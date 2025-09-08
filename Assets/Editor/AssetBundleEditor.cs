@@ -25,7 +25,7 @@ namespace MGS.AssetBundles.Editors
 
         static AssetBundleEditor()
         {
-            settingsPath = "Assets/Editor/AssetBundleEditor/AssetBundleSettings.asset";
+            settingsPath = "Assets/EditorSettings/AssetBundleSettings.asset";
             settings = LoadSettings(settingsPath);
             if (settings == null)
             {
