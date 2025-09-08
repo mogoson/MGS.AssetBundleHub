@@ -24,5 +24,10 @@ Hub to build and load asset bundle.
 1. Build bundle by the menu "Tool/AssetToBundleEditor/BuildFor...".
 1. Use the class AssetBundleHub to load AssetBundle and Object.
 
+## Samples
+
+- Unity --> Window --> Package Manager --> Packages-Mogoson --> Asset Bundle Hub --> Samples.
+
 ---
+
 Copyright © 2025 Mogoson.	mogoson@outlook.com
