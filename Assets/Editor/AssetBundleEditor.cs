@@ -52,32 +52,32 @@ namespace MGS.AssetBundles.Editors
         #endregion
 
         #region Tool Menu
-        [MenuItem("Tool/AssetBundleEditor/Settings")]
+        [MenuItem("Tools/AssetBundleEditor/Settings")]
         public static void ToolFocusSettings()
         {
             settings = LoadSettings(settingsPath);
             Selection.activeObject = settings;
         }
 
-        [MenuItem("Tool/AssetBundleEditor/BuildForWindows")]
+        [MenuItem("Tools/AssetBundleEditor/BuildForWindows")]
         public static void ToolBuildForWindows()
         {
             BuildToEachBundles(settings, BuildTarget.StandaloneWindows64);
         }
 
-        [MenuItem("Tool/AssetBundleEditor/BuildForAndroid")]
+        [MenuItem("Tools/AssetBundleEditor/BuildForAndroid")]
         public static void ToolBuildForAndroid()
         {
             BuildToEachBundles(settings, BuildTarget.Android);
         }
 
-        [MenuItem("Tool/AssetBundleEditor/BuildForIOS")]
+        [MenuItem("Tools/AssetBundleEditor/BuildForIOS")]
         public static void ToolBuildForIOS()
         {
             BuildToEachBundles(settings, BuildTarget.iOS);
         }
 
-        [MenuItem("Tool/AssetBundleEditor/BuildForAllPlatform")]
+        [MenuItem("Tools/AssetBundleEditor/BuildForAllPlatform")]
         public static void ToolBuildForAllPlatform()
         {
             ToolBuildForWindows();
