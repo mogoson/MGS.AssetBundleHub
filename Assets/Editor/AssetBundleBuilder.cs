@@ -76,9 +76,10 @@ namespace MGS.AssetBundles.Editors
 
         public static void RequireDirectory(string path)
         {
-            if (!Directory.Exists(path))
+            var dir = Path.GetDirectoryName(path);
+            if (!Directory.Exists(dir))
             {
-                Directory.CreateDirectory(path);
+                Directory.CreateDirectory(dir);
             }
         }
     }

@@ -11,7 +11,6 @@
  *************************************************************************/
 
 using System.Collections.Generic;
-using System.IO;
 using UnityEditor;
 using UnityEngine;
 
@@ -20,34 +19,35 @@ namespace MGS.AssetBundles.Editors
     public sealed class AssetBundleEditor
     {
         #region Settings
-        static string settingsPath;
+        const string SETTINGS_PATH = "Assets/AssetBundleSettings/Editor/AssetBundleSettings.asset";
         static AssetBundleSettings settings;
 
         static AssetBundleEditor()
         {
-            settingsPath = "Assets/Editor/Settings/AssetBundleSettings.asset";
-            settings = LoadSettings(settingsPath);
-            if (settings == null)
-            {
-                settings = CreateSettings(settingsPath);
-            }
+            settings = RequireSettings();
         }
 
-        static AssetBundleSettings CreateSettings(string settingsPath)
+        static AssetBundleSettings RequireSettings()
         {
-            var dir = Path.GetDirectoryName(settingsPath);
-            if (!Directory.Exists(dir))
+            var settings = LoadSettings();
+            if (settings == null)
             {
-                Directory.CreateDirectory(dir);
+                settings = CreateSettings();
             }
-            var settings = ScriptableObject.CreateInstance<AssetBundleSettings>();
-            AssetDatabase.CreateAsset(settings, settingsPath);
             return settings;
         }
 
-        static AssetBundleSettings LoadSettings(string settingsPath)
+        static AssetBundleSettings LoadSettings()
         {
-            return AssetDatabase.LoadAssetAtPath(settingsPath, typeof(AssetBundleSettings)) as AssetBundleSettings;
+            return AssetDatabase.LoadAssetAtPath<AssetBundleSettings>(SETTINGS_PATH);
+        }
+
+        static AssetBundleSettings CreateSettings()
+        {
+            AssetBundleBuilder.RequireDirectory(SETTINGS_PATH);
+            var settings = ScriptableObject.CreateInstance<AssetBundleSettings>();
+            AssetDatabase.CreateAsset(settings, SETTINGS_PATH);
+            return settings;
         }
         #endregion
 
@@ -55,7 +55,7 @@ namespace MGS.AssetBundles.Editors
         [MenuItem("Tools/AssetBundleEditor/Settings")]
         public static void ToolFocusSettings()
         {
-            settings = LoadSettings(settingsPath);
+            settings = LoadSettings();
             Selection.activeObject = settings;
         }
 
@@ -115,6 +115,11 @@ namespace MGS.AssetBundles.Editors
         #endregion
 
         #region Build
+        static string GetOutputDir(string root, BuildTarget target)
+        {
+            return $"{root}/{GetPlatFolder(target)}/";
+        }
+
         static string GetPlatFolder(BuildTarget target)
         {
             var platform = "Windows";
@@ -131,17 +136,12 @@ namespace MGS.AssetBundles.Editors
             return platform;
         }
 
-        static string GetOutputPath(string root, BuildTarget target)
-        {
-            return $"{root}/{GetPlatFolder(target)}";
-        }
-
         static void BuildToEachBundles(IEnumerable<Object> assets, AssetBundleSettings settings, BuildTarget target)
         {
             if (CheckSettingsIsValid(settings))
             {
                 var variant = settings.variant;
-                var output = GetOutputPath(settings.output, target);
+                var output = GetOutputDir(settings.output, target);
                 var options = settings.options;
                 var root = ResolveRootPath(settings);
                 AssetBundleBuilder.BuildToEachBundles(assets, variant, output, options, target, root);
@@ -155,7 +155,7 @@ namespace MGS.AssetBundles.Editors
             {
                 var assets = FindEachAssets(settings.assets);
                 var variant = settings.variant;
-                var output = GetOutputPath(settings.output, target);
+                var output = GetOutputDir(settings.output, target);
                 var options = settings.options;
                 var root = ResolveRootPath(settings);
                 AssetBundleBuilder.BuildToEachBundles(assets, variant, output, options, target, root);
@@ -192,14 +192,14 @@ namespace MGS.AssetBundles.Editors
 
         static IEnumerable<string> FindEachAssets(string assetRoot)
         {
-            var allAssets = new List<string>();
+            var assets = new List<string>();
             var guids = AssetDatabase.FindAssets("t:Folder", new string[] { assetRoot });
             foreach (var guid in guids)
             {
                 var assetPath = AssetDatabase.GUIDToAssetPath(guid);
-                allAssets.Add(assetPath);
+                assets.Add(assetPath);
             }
-            return allAssets;
+            return assets;
         }
         #endregion
     }
